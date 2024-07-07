@@ -1,47 +1,58 @@
 
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
 
 const verifyToken = require('../../middleware/authentication');
 const checkPermission = require('../../middleware/authorization');
+const multerUpload = require('../../middleware/file_upload');
 
+const Product = require('../../models/Product');
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'storage')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.fieldname + '_' + Date.now() + '.csv')
-    }
-});
-
-
-const multerUpload = multer({
-    storage: storage,
-    fileFilter: (req, file, cb) => {
-        if (!file.originalname.match(/\.(csv)$/)) {
-            return cb(new Error('Only csv files are allowed!'), false);
-        }
-        cb(null, true);
-    }
-}).array('file', 10);
+const { processUpload } = require('../../helpers/upload');
 
 
 
-router.post('/', verifyToken, checkPermission('admin'), (req, res) => {
-    multerUpload(req, res, (err) => {
-        if (err) {
-            res.status(400).json({
-                message: err.message
+
+router.post('/', verifyToken, checkPermission('admin'), multerUpload, async (req, res) => {
+
+    if (!req.file) {
+        return res.status(400).json({
+            status: 400,
+            message: 'No file uploaded'
+        });
+    } else {
+
+        const fileName = req.file.filename;
+
+        await processUpload(fileName).then(async (products) => {
+
+            await Product.insertMany(products).then(() => {
+                res.status(200).json({
+                    status: 200,
+                    message: [
+                        'File uploaded successfully',
+                        'Products added successfully'
+                    ],
+                    data: products
+                });
+            }).catch((error) => {
+                res.status(500).json({
+                    status: 500,
+                    message: 'Internal server error',
+                    error: error.message
+                });
             });
-        } else {
-            res.status(200).json({
-                message: 'Files uploaded successfully',
-                data: req.files
+
+        }).catch((error) => {
+            res.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: error.message
             });
-        }
-    });
+        });
+
+    }
+
 });
 
 

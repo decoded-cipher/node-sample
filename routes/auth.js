@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken');
 router.post('/register', async (req, res) => {
     try {
 
-        let { first_name, last_name, mobile, email, password } = req.body;
+        let { first_name, last_name, mobile, email, password, role } = req.body;
         let user = await User.findOne({ email: email });
 
 
@@ -48,7 +48,8 @@ router.post('/register', async (req, res) => {
                 last_name: last_name,
                 mobile: mobile,
                 email: email,
-                password: salt_password
+                password: salt_password,
+                role: role
             })
 
             await newUser.save()

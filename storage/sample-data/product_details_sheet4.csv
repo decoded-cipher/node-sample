@@ -1,0 +1,11 @@
+Product ID,Product Name,Category,Price,Stock
+401,3D Printer,Manufacturing,1200,10
+402,Laser Cutter,Manufacturing,2500,5
+403,CNC Machine,Manufacturing,3500,3
+404,Soldering Station,Tools,150,40
+405,Oscilloscope,Tools,400,25
+406,Multimeter,Tools,100,100
+407,Heat Gun,Tools,80,60
+408,Power Supply,Tools,200,30
+409,Workbench,Furniture,500,20
+410,Safety Goggles,Safety,20,200

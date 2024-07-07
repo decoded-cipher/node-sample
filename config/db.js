@@ -6,7 +6,7 @@ module.exports = {
     connect: () => {
         mongoose.connect(process.env.MONGO_URL)
         .then(() => {
-            console.log("--- Connected to MongoDB Atlas\n");
+            console.log("--- Connected to MongoDB Local\n");
         }).catch((error) => {
             console.log(error);
         });

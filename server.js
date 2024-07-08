@@ -1,7 +1,10 @@
 
 require('dotenv').config();
 
+const queue = require('./config/queue');
 const db = require('./config/db');
+
+queue.connect();
 db.connect();
 
 const express = require('express');

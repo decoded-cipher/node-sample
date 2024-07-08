@@ -6,7 +6,7 @@ const verifyToken = require('../../middleware/authentication');
 const checkPermission = require('../../middleware/authorization');
 const multerUpload = require('../../middleware/file_upload');
 
-const Product = require('../../models/Product');
+const Product = require('../../models/product');
 
 const { processUpload } = require('../../helpers/upload');
 

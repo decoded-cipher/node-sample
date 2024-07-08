@@ -1,0 +1,50 @@
+
+services:
+
+  backend:
+    build: .
+    container_name: 'backend'
+    depends_on:
+      - mongodb
+      - rabbitmq
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - node-sample-app
+
+  mongodb:
+    image: mongo
+    container_name: 'mongodb'
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - node-sample-app
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - node-sample-app
+
+networks:
+  node-sample-app:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  rabbitmq-data:

@@ -1,11 +1,11 @@
 
 require('dotenv').config();
 
-const queue = require('./config/queue');
 const db = require('./config/db');
+const queue = require('./config/queue');
 
-queue.connect();
 db.connect();
+queue.connect();
 
 const express = require('express');
 const app = express();
@@ -37,6 +37,6 @@ app.use((err, req, res, next) => {
     })
 });
 
-app.listen((process.env.PORT || 3000), () => {
-    console.log(`\n--- Server listening on port ${process.env.PORT || 3000}`)
+app.listen((process.env.PORT), () => {
+    console.log(`\n--- Server listening on port ${process.env.PORT}`)
 });

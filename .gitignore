@@ -3,7 +3,3 @@ node_modules
 
 storage/uploads/*
 !storage/uploads/.gitkeep
-
-Dockerfile
-docker-compose.yml
-.dockerignore

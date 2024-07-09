@@ -1,21 +1,31 @@
 
 const amqp = require('amqplib/callback_api.js');
 
+let channel;
 let queues = {
     upload_queue: 'upload_queue'
 };
 
 
-const connectRabbitMQ = ((callback) => {
+const connectRabbitMQ = (async () => {
     amqp.connect(process.env.RABBITMQ_URL, (error, connection) => {
         if (error) {
-            throw error;
+            console.error('--- Error connecting to RabbitMQ: ', error);
+            return;
         }
-        connection.createChannel((error, channel) => {
+        
+        console.log('--- RabbitMQ connected');
+        
+        connection.createChannel((error, ch) => {
             if (error) {
-                throw error;
+                console.error('--- Error creating channel: ', error);
+                return;
             }
-            callback(channel);
+            
+            console.log('--- Channel created');
+            channel = ch;
+            initializeQueue(channel);
+            console.log('--- Queues initialized');
         });
     });
 });
@@ -29,13 +39,12 @@ const initializeQueue = ((channel) => {
 
 
 const sendToUploadQueue = ((message) => {
-    connectRabbitMQ((channel) => {
-        initializeQueue(channel);
-        channel.sendToQueue(queues.upload_queue, Buffer.from(message));
-    });
+    channel.sendToQueue(queues.upload_queue, Buffer.from(message));
+    console.log('--- Message sent to upload_queue');
 });
 
 
 module.exports = {
+    connectRabbitMQ,
     sendToUploadQueue
 }

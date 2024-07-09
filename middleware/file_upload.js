@@ -18,8 +18,11 @@ const multerUpload = multer({
             return cb(new Error('Only csv files are allowed!'), false);
         }
         cb(null, true);
+    },
+    limits: {
+        fileSize: 1024 * 1024 * 10
     }
-}).single('file');
+}).array('files', 10);
 
 
 module.exports = multerUpload;

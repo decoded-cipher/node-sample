@@ -2,10 +2,10 @@
 require('dotenv').config();
 
 const db = require('./config/db');
-// const queue = require('./config/queue');
+const queue = require('./config/queue');
 
 db.connect();
-// queue.connect();
+queue.connectRabbitMQ();
 
 const express = require('express');
 const app = express();
@@ -17,10 +17,7 @@ const routes = require('./routes');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use('/', routes);
-
-
 
 app.use((req, res, next) => {
     res.status(404).json({

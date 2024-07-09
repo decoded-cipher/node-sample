@@ -11,25 +11,27 @@ const { sendToUploadQueue } = require('../../config/queue');
 
 
 router.post('/', multerUpload, async (req, res) => {
+    if (!req.files || req.files.length === 0) {
 
-    if (!req.file) {
         return res.status(400).json({
             status: 400,
-            message: 'No file uploaded'
+            message: 'No files uploaded'
         });
-    } else {
 
-        const fileName = req.file.filename;
-        sendToUploadQueue(fileName);
+    } else {
+        
+        const fileNames = req.files.map(file => file.filename);
+        fileNames.forEach(fileName => {
+            sendToUploadQueue(fileName);
+        });
 
         return res.status(200).json({
             status: 200,
-            message: 'File uploaded successfully',
-            file: fileName
+            message: 'Files uploaded successfully',
+            files: fileNames
         });
-
+        
     }
-
 
 });
 

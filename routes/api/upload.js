@@ -6,14 +6,11 @@ const verifyToken = require('../../middleware/authentication');
 const checkPermission = require('../../middleware/authorization');
 const multerUpload = require('../../middleware/file_upload');
 
-const Product = require('../../models/product');
-
-const { processUpload } = require('../../helpers/upload');
+const { sendToUploadQueue } = require('../../config/queue');
 
 
 
-
-router.post('/', verifyToken, checkPermission('admin'), multerUpload, async (req, res) => {
+router.post('/', multerUpload, async (req, res) => {
 
     if (!req.file) {
         return res.status(400).json({
@@ -23,37 +20,21 @@ router.post('/', verifyToken, checkPermission('admin'), multerUpload, async (req
     } else {
 
         const fileName = req.file.filename;
+        sendToUploadQueue(fileName);
 
-        await processUpload(fileName).then(async (products) => {
-
-            await Product.insertMany(products).then(() => {
-                res.status(200).json({
-                    status: 200,
-                    message: [
-                        'File uploaded successfully',
-                        'Products added successfully'
-                    ],
-                    data: products
-                });
-            }).catch((error) => {
-                res.status(500).json({
-                    status: 500,
-                    message: 'Internal server error',
-                    error: error.message
-                });
-            });
-
-        }).catch((error) => {
-            res.status(500).json({
-                status: 500,
-                message: 'Internal server error',
-                error: error.message
-            });
+        return res.status(200).json({
+            status: 200,
+            message: 'File uploaded successfully',
+            file: fileName
         });
 
     }
 
+
 });
+
+
+
 
 
 module.exports = router;
